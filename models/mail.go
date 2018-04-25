@@ -14,53 +14,56 @@ import (
 	"github.com/astaxie/beego"
 	"html/template"
 	"math/rand"
-	//"net/mail"
 )
 
 type FileInfo struct {
-	VarFile string
-	SubjectFile string
-	MessageFile string
+	VarFile string      `form:"emailFiles[varFileName]"`
+	SubjectFile string  `form:"emailFiles[subjectFile]"`
+	MessageFile string  `form:"emailFiles[messageFile]"`
 }
 
 type Config struct {
-	VarField string
-	DelayTime []int
+	VarField string   `form:"varField"`
+	DelayTime []int   `form:"delayTime"`
 }
 
 type SmtpServer struct {
-	Host string
-	Port string
+	Host string     `form:"smtpServer"`
+	Port string     `form:"port"`
+	Password string `form:"password"`
+}
+
+type MailInfo struct {
+  SenderId	string    `form:"fromEmail"`
+  SenderAlias string  `form:"aliasName"`
+  ToIds		string      `form:"-"`
+  Subject		string    `form:"-"`
+  Body     	string    `form:"-"`
 }
 
 type Mail struct {
 	FileInfo
 	Config
 	SmtpServer
-	SenderId	string
-	SenderAlias string
-	ToIds		string
-	Subject		string
-	Body     	string
-	Password 	string
+	MailInfo
 }
 
 func (s *SmtpServer) ServerName() string {
 	return s.Host + ":" + s.Port
 }
 
-func (mail *Mail) BuildMessage() string {
+func (mi *MailInfo) BuildMessage() string {
 	message := ""
-	if mail.SenderAlias != "" {
-		message += fmt.Sprintf("From: %s<%s>\r\n",mail.SenderAlias, mail.SenderId)
+	if mi.SenderAlias != "" {
+		message += fmt.Sprintf("From: %s<%s>\r\n",mi.SenderAlias, mi.SenderId)
 	} else {
-		message += fmt.Sprintf("From: %s\r\n", mail.SenderId)
+		message += fmt.Sprintf("From: %s\r\n", mi.SenderId)
 	}
 
-	message += fmt.Sprintf("To: %s\r\n", mail.ToIds)
+	message += fmt.Sprintf("To: %s\r\n", mi.ToIds)
 
-	message += fmt.Sprintf("Subject: %s\r\n", mail.Subject)
-	message += "\r\n" + mail.Body
+	message += fmt.Sprintf("Subject: %s\r\n", mi.Subject)
+	message += "\r\n" + mi.Body
 
 	return message
 }

@@ -5,12 +5,15 @@
   <title>Massmail</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--<link href="https://cdn.bootcss.com/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet">-->
-  <link href="https://cdn.bootcss.com/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+
+  <link href="https://cdn.bootcss.com/element-ui/2.3.2/theme-chalk/index.css" rel="stylesheet">
 </head>
 
 <body>
+  <div id="app">
+
+  </div>
+<!--
 <div class="container">
   <h1 class="text-center">自助邮件群发系统</h1>
   <form>
@@ -85,10 +88,11 @@
     </div>
   </form>
 </div>
+-->
 </body>
 
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!--<script src="https://cdn.bootcss.com/flat-ui/2.3.0/js/flat-ui.min.js"></script>-->
+<script src="https://cdn.bootcss.com/vue/2.5.16/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/element-ui/2.3.2/index.js"></script>
+<script type="text/javascript" src="static/js/main.js"></script>
 
 </html>

@@ -3,9 +3,6 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	//"html/template"
-	"github.com/adam-hanna/randomstrings"
-	"path"
-	"MassMail/models"
 )
 
 type MainController struct {
@@ -34,6 +31,7 @@ func (c *MainController) Get() {
 	c.Render()
 }
 
+/*
 func (c *MainController) Post() {
 	e := emailInfo{}
 	f := fileInfo{}
@@ -83,6 +81,7 @@ func (c *MainController) Post() {
 	fileInfo := models.FileInfo{}
 	fileInfo.SetValue(path.Join("/tmp",f.VarFileName), path.Join("/tmp",f.SubjectFileName), path.Join("/tmp",f.MessageFileName))
 	*/
-
+/*
 	go mh.SendEmail()
 }
+*/
