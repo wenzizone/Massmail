@@ -64,4 +64,5 @@ func (this *ApiController) SendEmail() {
 
   go mh.SendEmail()
 */
+  go mail.SendEmail()
 }

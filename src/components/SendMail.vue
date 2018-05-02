@@ -30,11 +30,11 @@
       </el-form-item>
       <el-form-item label="每封邮件发送间隔时间:">
         <el-col :span="11">
-          <el-input placeholder="最小时间" v-model="form.delyTimeMin" style="width: 100%;"></el-input>
+          <el-input placeholder="最小时间" v-model="form.minTime" style="width: 100%;"></el-input>
         </el-col>
         <el-col class="line" :span="2">-</el-col>
         <el-col :span="11">
-          <el-input placeholder="最大时间" v-model="form.delyTimeMax" style="width: 100%;"></el-input>
+          <el-input placeholder="最大时间" v-model="form.maxTime" style="width: 100%;"></el-input>
         </el-col>
       </el-form-item>
     </fieldset>
@@ -162,12 +162,31 @@ export default {
         return false
       }
     },
+    // 处理邮件发送间隔时间
+    checkDelayTime () {
+      if (typeof this.form.minTime === 'object') {
+        this.form.minTime = 1
+      }
+      if (typeof this.form.maxTime === 'object') {
+        this.form.maxTime = 5
+      }
+      if (this.form.minTime == this.form.maxTime) {
+        this.from.maxTime += 1
+      }
+
+      if (this.form.maxTime < this.form.minTime) {
+        this.form.delayTime = [this.form.maxTime, this.form.minTime]
+      } else {
+        this.form.delayTime = [this.form.minTime, this.form.maxTime]
+      }
+    },
     // 提交群发邮件
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.checkDelayTime()
           if (this.checkUploadFile()) {
-            axios.post('/api/sendmail', QS.stringify(this.form))
+            axios.post('/api/sendmail', QS.stringify(this.form, { arrayFormat: 'brackets' }))
               .then((response => {
                 this.$message.success(`邮件发送提交成功，请耐心等待。。`)
                 this.$refs[formName].resetFields();

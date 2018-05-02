@@ -14,6 +14,7 @@ import (
 	"github.com/astaxie/beego"
 	"html/template"
 	"math/rand"
+  "path"
 )
 
 type FileInfo struct {
@@ -24,7 +25,7 @@ type FileInfo struct {
 
 type Config struct {
 	VarField string   `form:"varField"`
-	DelayTime []int   `form:"delayTime"`
+	DelayTime []int   `form:"delayTime[]"`
 }
 
 type SmtpServer struct {
@@ -47,6 +48,8 @@ type Mail struct {
 	SmtpServer
 	MailInfo
 }
+
+const fileUploadDir = "/tmp/"
 
 func (s *SmtpServer) ServerName() string {
 	return s.Host + ":" + s.Port
@@ -71,7 +74,7 @@ func (mi *MailInfo) BuildMessage() string {
 func (m *Mail) SendEmail() {
 	beego.Debug(m)
 
-	f,err := os.Open(m.VarFile)
+	f,err := os.Open(path.Join(fileUploadDir, m.VarFile))
 	if err != nil {
 		beego.Debug(err)
 	}
@@ -180,7 +183,7 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 func (f *FileInfo) generateTitle(varFieldMap map[interface{}]interface{}) string {
 	var doc bytes.Buffer
 
-	tmpl := template.Must(template.ParseFiles(f.SubjectFile))
+	tmpl := template.Must(template.ParseFiles(path.Join(fileUploadDir, f.SubjectFile)))
 	//tmpl, _ := template.ParseFiles(*titleFile)
 
 	err := tmpl.Execute(&doc, varFieldMap)
@@ -194,7 +197,7 @@ func (f *FileInfo) generateTitle(varFieldMap map[interface{}]interface{}) string
 func (f *FileInfo) generateEmailMessage(varFieldMap map[interface{}]interface{}) string {
 	var doc bytes.Buffer
 
-	tmpl := template.Must(template.ParseFiles(f.MessageFile))
+	tmpl := template.Must(template.ParseFiles(path.Join(fileUploadDir,f.MessageFile)))
 
 	err := tmpl.Execute(&doc, varFieldMap)
 	if err != nil {
