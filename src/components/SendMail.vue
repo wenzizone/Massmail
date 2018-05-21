@@ -111,22 +111,22 @@ export default {
         }
       },
       isVarfileDisabled: false,
-      varfileList:[],
-      titlefileList:[],
-      msgfileList:[],
+      varfileList: [],
+      titlefileList: [],
+      msgfileList: [],
       rules: {
         fromEmail: [
-          { required: true, message: "请输入发送人邮件地址", trigger: 'blur'},
-          { type: 'email', message: "请输入正确的邮件地址", trigger: 'change'  }
+          { required: true, message: '请输入发送人邮件地址', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' }
         ],
         smtpServer: [
-          { required: true, message: "请输入发送邮件服务器地址", trigger: 'blur' }
+          { required: true, message: '请输入发送邮件服务器地址', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: "请输入邮件服务器密码", trigger: 'blur' }
+          { required: true, message: '请输入邮件服务器密码', trigger: 'blur' }
         ],
         varField: [
-          { required: true, message: "请输入邮件变量在文件中的列", trigger: 'blur' }
+          { required: true, message: '请输入邮件变量在文件中的列', trigger: 'blur' }
         ]
       }
     }
@@ -136,27 +136,27 @@ export default {
       this.$message.warning('只能上传一个文件')
     },
     handleSuccess (response, files, fileList) {
-      console.log('response = ', response);
-      switch(response.fileType) {
-        case "varfile":
-          this.form.emailFiles.varFileName = response.fileName;
+      // console.log('response = ', response);
+      switch (response.fileType) {
+        case 'varfile':
+          this.form.emailFiles.varFileName = response.fileName
           this.varfileList = fileList
-          break;
-        case "subjectfile":
-          this.form.emailFiles.subjectFile = response.fileName;
+          break
+        case 'subjectfile':
+          this.form.emailFiles.subjectFile = response.fileName
           this.titlefileList = fileList
-          break;
-        case "msgfile":
-          this.form.emailFiles.messageFile = response.fileName;
+          break
+        case 'msgfile':
+          this.form.emailFiles.messageFile = response.fileName
           this.msgfileList = fileList
           break
       }
-      console.log('files = ', files);
+      console.log('files = ', files)
       console.log('fileList = ', fileList)
     },
     // 检查需要上传文件的部分是否都已经有了文件
     checkUploadFile () {
-      if ((this.varfileList.length == 1) && (this.titlefileList.length == 1) && (this.msgfileList.length == 1)) {
+      if ((this.varfileList.length === 1) && (this.titlefileList.length === 1) && (this.msgfileList.length === 1)) {
         return true
       } else {
         return false
@@ -170,7 +170,7 @@ export default {
       if (typeof this.form.maxTime === 'object') {
         this.form.maxTime = 5
       }
-      if (this.form.minTime == this.form.maxTime) {
+      if (this.form.minTime === this.form.maxTime) {
         this.from.maxTime += 1
       }
 
@@ -187,10 +187,10 @@ export default {
           this.checkDelayTime()
           if (this.checkUploadFile()) {
             axios.post('/api/sendmail', QS.stringify(this.form, { arrayFormat: 'brackets' }))
-              .then((response => {
+              .then((response) => {
                 this.$message.success(`邮件发送提交成功，请耐心等待。。`)
-                this.$refs[formName].resetFields();
-              }))
+                this.$refs[formName].resetFields()
+              })
               .catch((error) => {
                 this.$message.error(`邮件发送提交失败，请检查后重试。。`)
               })
@@ -201,14 +201,14 @@ export default {
             return false
           }
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     // 取消，初始化表单
     resetForm (formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     }
   }
 }

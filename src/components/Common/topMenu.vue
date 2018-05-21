@@ -11,6 +11,13 @@ export default {
     return {
       activeIndex: this.$route.path
     }
+  },
+  methods: {
+    routerChange (item) {
+      if (item.url !== this.$route.path) {
+        router.push(item.url)
+      }
+    }
   }
 }
 </script>

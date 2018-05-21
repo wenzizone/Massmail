@@ -13,10 +13,10 @@ Vue.config.productionTip = false
 
 Vue.use(ElementUI)
 
-
 window.Lockr = Lockr
 window.axios = axios
 window.QS = QS
+window.router = router
 
 /* eslint-disable no-new */
 new Vue({
