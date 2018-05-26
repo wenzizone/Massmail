@@ -1,45 +1,45 @@
 package models
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"os"
-	"bufio"
 	//"github.com/sadlil/gologger"
-	"net/smtp"
-	"crypto/tls"
 	"bytes"
+	"crypto/tls"
 	"github.com/astaxie/beego"
 	"html/template"
 	"math/rand"
-  "path"
+	"net/smtp"
+	"path"
 )
 
 type FileInfo struct {
-	VarFile string      `form:"emailFiles[varFileName]"`
-	SubjectFile string  `form:"emailFiles[subjectFile]"`
-	MessageFile string  `form:"emailFiles[messageFile]"`
+	VarFile     string `form:"emailFiles[varFileName]"`
+	SubjectFile string `form:"emailFiles[subjectFile]"`
+	MessageFile string `form:"emailFiles[messageFile]"`
 }
 
 type Config struct {
-	VarField string   `form:"varField"`
-	DelayTime []int   `form:"delayTime[]"`
+	VarField  string `form:"varField"`
+	DelayTime []int  `form:"delayTime[]"`
 }
 
 type SmtpServer struct {
-	Host string     `form:"smtpServer"`
-	Port string     `form:"port"`
+	Host     string `form:"smtpServer"`
+	Port     string `form:"port"`
 	Password string `form:"password"`
 }
 
 type MailInfo struct {
-  SenderId	string    `form:"fromEmail"`
-  SenderAlias string  `form:"aliasName"`
-  ToIds		string      `form:"-"`
-  Subject		string    `form:"-"`
-  Body     	string    `form:"-"`
+	SenderId    string `form:"fromEmail"`
+	SenderAlias string `form:"aliasName"`
+	ToIds       string `form:"-"`
+	Subject     string `form:"-"`
+	Body        string `form:"-"`
 }
 
 type Mail struct {
@@ -58,7 +58,7 @@ func (s *SmtpServer) ServerName() string {
 func (mi *MailInfo) BuildMessage() string {
 	message := ""
 	if mi.SenderAlias != "" {
-		message += fmt.Sprintf("From: %s<%s>\r\n",mi.SenderAlias, mi.SenderId)
+		message += fmt.Sprintf("From: %s<%s>\r\n", mi.SenderAlias, mi.SenderId)
 	} else {
 		message += fmt.Sprintf("From: %s\r\n", mi.SenderId)
 	}
@@ -74,7 +74,7 @@ func (mi *MailInfo) BuildMessage() string {
 func (m *Mail) SendEmail() {
 	beego.Debug(m)
 
-	f,err := os.Open(path.Join(fileUploadDir, m.VarFile))
+	f, err := os.Open(path.Join(fileUploadDir, m.VarFile))
 	if err != nil {
 		beego.Debug(err)
 	}
@@ -91,7 +91,7 @@ func (m *Mail) SendEmail() {
 		//time.Sleep(10 * time.Second)
 		//fmt.Println(scanner.Text())
 
-		varFieldContentSlice := strings.Split(scanner.Text(),",")
+		varFieldContentSlice := strings.Split(scanner.Text(), ",")
 
 		for _, i := range varFieldSlice {
 			ii, _ := strconv.Atoi(i)
@@ -129,25 +129,25 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 
 	conn, err := tls.Dial("tcp", m.ServerName(), tlsconfig)
 	if err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
 	client, err := smtp.NewClient(conn, m.Host)
 	if err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
 	// step 1: Use Auth
 	if err = client.Auth(auth); err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
 	// step 2: add all from and to
 	if err = client.Mail(m.SenderId); err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 	if err = client.Rcpt(m.ToIds); err != nil {
@@ -158,19 +158,19 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 	// Data
 	w, err := client.Data()
 	if err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
 	_, err = w.Write([]byte(messageBody))
 	if err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
 	err = w.Close()
 	if err != nil {
-		beego.Debug(fmt.Sprintf("%v",err))
+		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
@@ -197,7 +197,7 @@ func (f *FileInfo) generateTitle(varFieldMap map[interface{}]interface{}) string
 func (f *FileInfo) generateEmailMessage(varFieldMap map[interface{}]interface{}) string {
 	var doc bytes.Buffer
 
-	tmpl := template.Must(template.ParseFiles(path.Join(fileUploadDir,f.MessageFile)))
+	tmpl := template.Must(template.ParseFiles(path.Join(fileUploadDir, f.MessageFile)))
 
 	err := tmpl.Execute(&doc, varFieldMap)
 	if err != nil {
@@ -213,7 +213,7 @@ func (c *Config) generateTandomSleeptime() int {
 	min, max := c.DelayTime[0], c.DelayTime[1]
 	//max, _ := config.delayTime[1]
 	//return 1
-	randTimedelay := rand.Intn(max-min)+min
+	randTimedelay := rand.Intn(max-min) + min
 	//fmt.Println(randTimedelay)
 	return randTimedelay
 }
