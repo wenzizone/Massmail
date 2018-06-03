@@ -17,7 +17,8 @@ func (c *MainController) Get() {
 }
 
 func (c *MainController) GetHome() {
-	c.Data["xsrfdata"]=template.HTML(c.XSRFFormHTML())
+	//c.Data["xsrfdata"]=template.HTML(c.XSRFFormHTML())
+	c.Data["xsrf_token"] = c.XSRFToken()
 	datas, err := data.Asset("views/index.tpl")
 	if err != nil {
 		//c.String(400, err.Error())

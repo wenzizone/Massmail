@@ -31,6 +31,7 @@ type Config struct {
 type SmtpServer struct {
 	Host     string `form:"smtpServer"`
 	Port     string `form:"port"`
+	Username string `form:"username"`
 	Password string `form:"password"`
 }
 
@@ -114,11 +115,15 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 	m.Subject = subject
 	m.Body = body
 
+	if m.SenderId == "" {
+		m.SenderId = m.Username
+	}
+
 	messageBody := m.BuildMessage()
 
 	beego.Info(m.Host)
 	//build an auth
-	auth := smtp.PlainAuth("", m.SenderId, m.Password, m.Host)
+	auth := smtp.PlainAuth("", m.Username, m.Password, m.Host)
 
 	// Gmail will reject connection if it's not secure
 	// TLS config

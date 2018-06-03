@@ -12,14 +12,18 @@
 
     <fieldset>
       <legend>发送邮件服务器信息</legend>
+      <el-form-item label="发送邮件服务器登录账号:" prop="username">
+        <el-input v-model="form.username" placeholder="xxx@xxx.com"></el-input>
+      </el-form-item>
+      <el-form-item label="发送邮件服务器登录密码:" prop="password">
+        <el-input type="password" v-model="form.password"></el-input>
+      </el-form-item>
+
       <el-form-item label="发送邮件服务器地址:" prop="smtpServer">
         <el-input v-model="form.smtpServer" placeholder="smtp.xxx.com"></el-input>
       </el-form-item>
       <el-form-item label="发送邮件服务器端口:">
         <el-input v-model="form.port" placeholder="465"></el-input>
-      </el-form-item>
-      <el-form-item label="发送邮件服务器登录密码:" prop="password">
-        <el-input type="password" v-model="form.password"></el-input>
       </el-form-item>
     </fieldset>
 
@@ -48,6 +52,9 @@
           name="varFile"
           accept=".txt,.csv"
           :disabled="isVarfileDisabled"
+          :headers="headerInfo"
+          :data="uploadParam"
+          :with-credentials="true"
           action="/api/upload/varfile"
           :on-success="handleSuccess"
           :file-list="varfileList">
@@ -62,7 +69,10 @@
           accept=".txt,.csv"
           :on-exceed="handleExceed"
           :on-success="handleSuccess"
-          action="/api/upload/subjectile"
+          action="/api/upload/subjectfile"
+          :headers="headerInfo"
+          :data="uploadParam"
+          :with-credentials="true"
           :file-list="titlefileList">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传csv/txt文件，且不超过100kb</div>
@@ -76,6 +86,9 @@
           :on-exceed="handleExceed"
           :on-success="handleSuccess"
           action="/api/upload/msgfile"
+          :headers="headerInfo"
+          :data="uploadParam"
+          :with-credentials="true"
           :file-list="msgfileList">
           <el-button size="small" type="primary">点击上传</el-button>
           <div slot="tip" class="el-upload__tip">只能上传csv/txt文件，且不超过100kb</div>
@@ -98,12 +111,14 @@ export default {
         aliasName: '',
         fromEmail: '',
         smtpServer: '',
+        username: '',
         port: 465,
         password: '',
         varField: '',
         minTime: null,
         maxTime: null,
         delayTime: [],
+        _xsrf: '',
         emailFiles: {
           varFileName: null,
           subjectFile: null,
@@ -114,9 +129,14 @@ export default {
       varfileList: [],
       titlefileList: [],
       msgfileList: [],
+      uploadParam: {
+        "_xsrf": this.getToken()
+      },
+      headerInfo: {
+        "X-Xsrftoken": this.getToken()
+      },
       rules: {
         fromEmail: [
-          { required: true, message: '请输入发送人邮件地址', trigger: 'blur' },
           { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' }
         ],
         smtpServer: [
@@ -124,6 +144,10 @@ export default {
         ],
         password: [
           { required: true, message: '请输入邮件服务器密码', trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: '请输入邮件服务登录账号', trigger:' blur' },
+          { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' }
         ],
         varField: [
           { required: true, message: '请输入邮件变量在文件中的列', trigger: 'blur' }
@@ -180,10 +204,22 @@ export default {
         this.form.delayTime = [this.form.minTime, this.form.maxTime]
       }
     },
+    // 从cookie中获取_xsrf
+    getToken () {
+      var re = new RegExp("_xsrf=([^;]+)");
+      var value = re.exec(document.cookie)+''
+      let xsrflist = value.split("|");
+      let base64String = xsrflist[0].split("=")
+      //this._xsrf = Base64.encode(xsrflist[0])
+      //return Base64.encode(xsrflist[0])
+      return atob(base64String[1]+"=")
+      //return base64String[1]+"="
+    },
     // 提交群发邮件
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.form._xsrf = this.getToken()
           this.checkDelayTime()
           if (this.checkUploadFile()) {
             axios.post('/api/sendmail', QS.stringify(this.form, { arrayFormat: 'brackets' }))
@@ -238,5 +274,8 @@ export default {
     color: #333;
     border: 0;
     border-bottom: 1px solid #e5e5e5;
+  }
+  .el-input {
+    width: 350px;
   }
 </style>

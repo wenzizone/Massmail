@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.3.4",
+    "js-base64": "^2.4.5",
     "lockr": "^0.8.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"

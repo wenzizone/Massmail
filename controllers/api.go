@@ -21,7 +21,7 @@ func (this *ApiController) Upload() {
 		varFileName, _ := randomstrings.GenerateRandomString(9)
 		this.SaveToFile("varFile", path.Join("/tmp", varFileName))
 		this.Data["json"] = map[string]string{"fileType": "varfile", "fileName": varFileName}
-	case "subjectile":
+	case "subjectfile":
 		subjectFileName, _ := randomstrings.GenerateRandomString(9)
 		this.SaveToFile("subjectFile", path.Join("/tmp", subjectFileName))
 		this.Data["json"] = map[string]string{"fileType": "subjectfile", "fileName": subjectFileName}
