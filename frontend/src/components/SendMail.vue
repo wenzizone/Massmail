@@ -208,10 +208,11 @@ export default {
     getToken () {
       var re = new RegExp("_xsrf=([^;]+)");
       var value = re.exec(document.cookie)+''
+      if (value === 'null') {
+        return ''
+      }
       let xsrflist = value.split("|");
       let base64String = xsrflist[0].split("=")
-      //this._xsrf = Base64.encode(xsrflist[0])
-      //return Base64.encode(xsrflist[0])
       return atob(base64String[1]+"=")
       //return base64String[1]+"="
     },

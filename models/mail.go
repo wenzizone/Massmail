@@ -15,6 +15,7 @@ import (
 	"math/rand"
 	"net/smtp"
 	"path"
+	"encoding/base64"
 )
 
 type FileInfo struct {
@@ -41,6 +42,7 @@ type MailInfo struct {
 	ToIds       string `form:"-"`
 	Subject     string `form:"-"`
 	Body        string `form:"-"`
+	IsHtmlmsg	string `form:"isHtmlmsg"`
 }
 
 type Mail struct {
@@ -57,16 +59,28 @@ func (s *SmtpServer) ServerName() string {
 }
 
 func (mi *MailInfo) BuildMessage() string {
-	message := ""
+
+	b64 := base64.NewEncoding("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/")
+	// Setup headers
+	headers := make(map[string]string)
+
 	if mi.SenderAlias != "" {
-		message += fmt.Sprintf("From: %s<%s>\r\n", mi.SenderAlias, mi.SenderId)
+		headers["From"] = fmt.Sprintf("%s<%s>", mi.SenderAlias, mi.SenderId)
 	} else {
-		message += fmt.Sprintf("From: %s\r\n", mi.SenderId)
+		headers["From"] = mi.SenderId
 	}
 
-	message += fmt.Sprintf("To: %s\r\n", mi.ToIds)
+	headers["To"] = mi.ToIds
 
-	message += fmt.Sprintf("Subject: %s\r\n", mi.Subject)
+	headers["Subject"] =  fmt.Sprintf("=?UTF-8?B?%s?=", b64.EncodeToString([]byte(mi.Subject)))
+	headers["MIME-Version"] ="1.0"
+	headers["Content-Type"] = "text/html; charset=\"UTF-8\""
+
+	// Setup message
+	message := ""
+	for k,v := range headers {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
+	}
 	message += "\r\n" + mi.Body
 
 	return message
@@ -137,12 +151,15 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
+	defer conn.Close()
 
 	client, err := smtp.NewClient(conn, m.Host)
 	if err != nil {
 		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
+
+	defer client.Quit()
 
 	// step 1: Use Auth
 	if err = client.Auth(auth); err != nil {
@@ -167,19 +184,24 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 		return
 	}
 
+	defer w.Close()
+
 	_, err = w.Write([]byte(messageBody))
 	if err != nil {
 		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
 
+	/*
 	err = w.Close()
 	if err != nil {
 		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
+	*/
 
-	client.Quit()
+
+	//client.Quit()
 
 	beego.Info(fmt.Sprintf("邮件发送成功,%s", m.ToIds))
 }
