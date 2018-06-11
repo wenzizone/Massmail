@@ -41,6 +41,9 @@
           <el-input placeholder="最大时间" v-model="form.maxTime" style="width: 100%;"></el-input>
         </el-col>
       </el-form-item>
+      <el-form-item>
+        <el-checkbox v-model="form.isHtmlmsg">发送Html格式的邮件     </el-checkbox>
+      </el-form-item>
     </fieldset>
 
     <fieldset>
@@ -119,6 +122,8 @@ export default {
         maxTime: null,
         delayTime: [],
         _xsrf: '',
+        isSameAsSmtpUser: false,
+        isHtmlmsg:false,
         emailFiles: {
           varFileName: null,
           subjectFile: null,
@@ -175,8 +180,8 @@ export default {
           this.msgfileList = fileList
           break
       }
-      console.log('files = ', files)
-      console.log('fileList = ', fileList)
+      //console.log('files = ', files)
+      //console.log('fileList = ', fileList)
     },
     // 检查需要上传文件的部分是否都已经有了文件
     checkUploadFile () {

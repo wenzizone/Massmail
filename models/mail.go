@@ -74,7 +74,9 @@ func (mi *MailInfo) BuildMessage() string {
 
 	headers["Subject"] =  fmt.Sprintf("=?UTF-8?B?%s?=", b64.EncodeToString([]byte(mi.Subject)))
 	headers["MIME-Version"] ="1.0"
-	headers["Content-Type"] = "text/html; charset=\"UTF-8\""
+	if mi.IsHtmlmsg == "true" {
+		headers["Content-Type"] = "text/html; charset=\"UTF-8\""
+	}
 
 	// Setup message
 	message := ""
