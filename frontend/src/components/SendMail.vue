@@ -142,7 +142,8 @@ export default {
       },
       rules: {
         fromEmail: [
-          { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' }
+          { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' },
+          { required: true, message: '发送邮件地址不能为空', trigger:' blur' },
         ],
         smtpServer: [
           { required: true, message: '请输入发送邮件服务器地址', trigger: 'blur' }
@@ -151,8 +152,7 @@ export default {
           { required: true, message: '请输入邮件服务器密码', trigger: 'blur' }
         ],
         username: [
-          { required: true, message: '请输入邮件服务登录账号', trigger:' blur' },
-          { type: 'email', message: '请输入正确的邮件地址', trigger: 'change' }
+          { required: true, message: '请输入邮件服务登录账号', trigger:' blur' }
         ],
         varField: [
           { required: true, message: '请输入邮件变量在文件中的列', trigger: 'blur' }
