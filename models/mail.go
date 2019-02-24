@@ -170,7 +170,7 @@ func (m *Mail) sendingEmail(toEmail string, subject string, body string) {
 	}
 
 	// step 2: add all from and to
-	if err = client.Mail(m.Username); err != nil {
+	if err = client.Mail(m.SenderId); err != nil {
 		beego.Debug(fmt.Sprintf("%v", err))
 		return
 	}
