@@ -78,6 +78,7 @@ func (mi *MailInfo) BuildMessage() string {
 		headers["Content-Type"] = "text/html; charset=\"UTF-8\""
 	}
 
+	headers["X-SES-CONFIGURATION-SET"] = "odoo-mail"
 	// Setup message
 	message := ""
 	for k,v := range headers {
